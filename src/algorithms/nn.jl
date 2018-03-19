@@ -27,9 +27,10 @@ function encode_8x3x8(N, alpha, ofile)
             inp = input[i,:]
             lab = labels[i,:]
 
-            hidden, pred = feed_forward_encoder(inp, w1, w2)
+            hidden, pred = feedforward(inp, w1, w2)
 
             u1, u2 = backpropogate(pred, lab, hidden, w1, w2)
+            u1 = u1[1:3]
 
             # Now update weights
             w1 -= alpha * (u1.' * inp.').'
@@ -48,11 +49,61 @@ function encode_8x3x8(N, alpha, ofile)
 
         inp = input[i,:]
         lab = labels[i,:]
-        hidden, pred = feed_forward_encoder(inp, w1, w2)
+        hidden, pred = feedforward(inp, w1, w2)
 
         raw[i,:] = pred
         output[i,:] = convert_to_one_hot(pred)
         h_output[i,:] = hidden[1:3]
+
+        sserr += sum((pred - lab.').^2)
+    end
+    println(string("Sum of Squared Error: ", sserr))
+    raw, output, h_output
+
+end
+
+function nn_3layer(input, labels, hl_size, N, alpha, ofile)
+
+    # Add bias term to input layer
+    input = hcat(ones(size(input, 2), 1), input)
+
+    # draw random weights for first layer to hidden layaer
+    w1 = rand(size(input, 2), hl_size)
+    # draw random weights for hidden layer to output layer
+    w2 = rand(hl_size+1, size(labels, 2))
+
+    for j in 1:N
+        for i in 1:size(input, 1)
+
+            inp = input[i,:]
+            lab = labels[i,:]
+
+            hidden, pred = feedforward(inp, w1, w2)
+
+            u1, u2 = backpropogate(pred, lab, hidden, w1, w2)
+            u1 = u1[1:hl_size]
+
+            # Now update weights
+            w1 -= alpha * (u1.' * inp.').'
+            w2 -= alpha * (u2.' * hidden).'
+        end
+
+    end
+
+    output = zeros(size(labels))
+    raw = zeros(size(labels))
+    h_output = zeros(size(labels, 1), hl_size)
+
+    sserr = 0.0
+    for i in 1:size(input, 1)
+
+        inp = input[i,:]
+        lab = labels[i,:]
+        hidden, pred = feedforward(inp, w1, w2)
+
+        raw[i,:] = pred
+        output[i,:] = convert_to_one_hot(pred)
+        h_output[i,:] = hidden[1:hl_size]
 
         sserr += sum((pred - lab.').^2)
     end
@@ -77,7 +128,7 @@ Feed an INPUT array through a simple 8x3x8 encoder with input weights W1 and
 hidden layer weights W2. Report back the hidden predictions as well as the
 output predictions.
 """
-function feed_forward_encoder(x, w1, w2)
+function feedforward(x, w1, w2)
 
     # Feed to first layer
     h = x.' * (w1)
@@ -94,10 +145,6 @@ function backpropogate(predictions, label, hl, w1, w2)
     u2 = predictions .* (1 - predictions) .* (predictions - label.')
 
     u1 = hl .* (1 - hl) .* (w2 * u2.').'
-
-    # Remove bias for update to first layer; i.e. inputs are not connected to
-    # the hidden layer's bias term
-    u1 = u1[1:3]
 
     u1, u2
 
