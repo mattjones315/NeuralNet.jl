@@ -32,8 +32,8 @@ function encode_8x3x8(N, alpha, ofile)
             u1, u2 = backpropogate(pred, lab, hidden, w1, w2)
 
             # Now update weights
-            w1 = w1 + alpha * (u1.' * inp.').'
-            w2 = w2 + alpha * (u2.' * hidden).'
+            w1 -= alpha * (u1.' * inp.').'
+            w2 -= alpha * (u2.' * hidden).'
 
         end
     end
@@ -52,13 +52,11 @@ function encode_8x3x8(N, alpha, ofile)
 
         raw[i,:] = pred
         output[i,:] = convert_to_one_hot(pred)
-        println(pred)
-        println(lab)
         h_output[i,:] = hidden[1:3]
 
-        sserr += sum(pred - lab.')^2
+        sserr += sum((pred - lab.').^2)
     end
-    println(sserr)
+    println(string("Sum of Squared Error: ", sserr))
     raw, output, h_output
 
 end
