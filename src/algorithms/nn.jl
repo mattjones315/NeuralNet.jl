@@ -58,6 +58,8 @@ function encode_8x3x8(N, alpha, ofile)
         sserr += sum((pred - lab.').^2)
     end
     println(string("Sum of Squared Error: ", sserr))
+
+    write_results(output, h_output, ofile)
     raw, output, h_output
 
 end
@@ -65,7 +67,7 @@ end
 function nn_3layer(input, labels, hl_size, N, alpha, ofile)
 
     # Add bias term to input layer
-    input = hcat(ones(size(input, 2), 1), input)
+    input = hcat(ones(size(input, 1), 1), input)
 
     # draw random weights for first layer to hidden layaer
     w1 = rand(size(input, 2), hl_size)
@@ -73,6 +75,7 @@ function nn_3layer(input, labels, hl_size, N, alpha, ofile)
     w2 = rand(hl_size+1, size(labels, 2))
 
     for j in 1:N
+        println(string("Epoch: ", j))
         for i in 1:size(input, 1)
 
             inp = input[i,:]
@@ -162,4 +165,14 @@ function convert_to_one_hot(arr)
 
     arr
 
+end
+
+function write_results(output, hidden_output, ofile)
+
+    open(ofile, "w") do f
+
+        for i in 1:size(output, 1)
+            write(f, string(output[i,:], "\t", hidden_output[i,:], "\n"))
+        end
+    end
 end

@@ -7,12 +7,22 @@ align(algorithm::Compat.String, gap_penalty::Float64, gap_cont_penalty::Float64,
 Align SEQ1 to SEQ2 using the scoring matrix SMAT and paramters GAP_PENALTY and GAP_CONT_PENALTY
 for the ALGORITHM defined by user.
 """
-function simple_encoder(outputfile::Compat.String)
+function simple_encoder(N::Int, alpha::Float64, outputfile::Compat.String)
 
 
     include(joinpath(source_dir, "algorithms", "nn.jl"));
     # run
-    Base.invokelatest(encode_8x3x8, outputfile);
-    end
+    Base.invokelatest(encode_8x3x8, N, alpha, outputfile);
+
 
 end
+
+
+function train_model(N::Int, alpha::Float64, hl_size::Int, pos_seqs::Compat.String,
+            total_seq::Compat.String, ouput_file::Compat.String)
+
+    include(joinpath(source_dir, "algorithms", "nn.jl"));
+    include(joinpath(source_dir, "utils", "parse.jl"));
+
+    Base.invokelatest(nn_3layer, Base.invokelatest(pos_seqs, total_seq, nr=100),
+                        hl_size, N, alpha, ofile))

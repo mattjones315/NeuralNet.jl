@@ -11,13 +11,18 @@ function main()
 
     if command == "help"
         foreach(x -> println(x), help())
-    elseif command == "predict"
-        predict(parsed_args[command]["data_set"],
-        parsed_args[command]["sequence"],
+    elseif command == "train_model"
+        train_model(parsed_args[command]["N"]
+        parsed_args[command]["a"],
+        parsed_args[command]["hl_size"]
+        parsed_args[command]["pos_seq"],
+        parsed_args[command]["total_seq"],
         parsed_args[command]["output_file"],
         )
     elseif command == "simple_encoder"
-        simple_encoder(parsed_args[command]["output_file"])
+        simple_encoder(parsed_args[command]["N"],
+            parsed_args[command]["a"],
+            parsed_args[command]["output_file"])
     else
         println("Command not recognized")
     end
