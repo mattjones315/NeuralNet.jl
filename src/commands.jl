@@ -19,10 +19,12 @@ end
 
 
 function train_model(N::Int, alpha::Float64, hl_size::Int, pos_seqs::Compat.String,
-            total_seq::Compat.String, ouput_file::Compat.String)
+            total_seq::Compat.String, outputfile::Compat.String)
 
     include(joinpath(source_dir, "algorithms", "nn.jl"));
     include(joinpath(source_dir, "utils", "parse.jl"));
 
-    Base.invokelatest(nn_3layer, Base.invokelatest(pos_seqs, total_seq, nr=100),
-                        hl_size, N, alpha, ofile))
+    Base.invokelatest(nn_3layer, Base.invokelatest(parse_input, pos_seqs, total_seq),
+                        hl_size, N, alpha, outputfile);
+
+end

@@ -12,9 +12,9 @@ function main()
     if command == "help"
         foreach(x -> println(x), help())
     elseif command == "train_model"
-        train_model(parsed_args[command]["N"]
+        train_model(parsed_args[command]["N"],
         parsed_args[command]["a"],
-        parsed_args[command]["hl_size"]
+        parsed_args[command]["hl_size"],
         parsed_args[command]["pos_seq"],
         parsed_args[command]["total_seq"],
         parsed_args[command]["output_file"],

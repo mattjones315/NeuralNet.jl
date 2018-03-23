@@ -1,16 +1,16 @@
 using FastaIO;
 
-DNA_ONE_HOT = Dict("A" => 1, "C" => 2, "G" => 3, "T" => 4)
+DNA_ONE_HOT = Dict("A" => [1,0,0,0], "C" => [0,1,0,0], "G" => [0,0,1,0], "T" => [0,0,0,1]);
 
-function parse_input(pos_seq_fp, total_seq_fp; nr=1000)
+function parse_training(pos_seq_fp, total_seq_fp; nr=100, balance=1)
 
     pos_mat = parse_seq(pos_seq_fp);
 
     neg_seqs = readfasta(total_seq_fp)[1:nr];
-    neg_mat = zeros(Int, 1, 17);
+    neg_mat = zeros(Int, 1, size(pos_mat, 2));
 
     for seq in neg_seqs
-        seq_segs = create_16b_segments(seq[2]);
+        seq_segs = create_17b_segments(seq[2]);
         for seg in seq_segs
             oh = dna_to_one_hot(seg);
             neg_mat = vcat(neg_mat, oh.');
@@ -19,6 +19,8 @@ function parse_input(pos_seq_fp, total_seq_fp; nr=1000)
     neg_mat = neg_mat[2:end, :];
 
     neg_mat = filter_mats(pos_mat, neg_mat)
+
+    neg_mat = neg_mat[rand(1:size(neg_mat, 1), size(pos_mat, 1)*balance),:]
 
     labels = ones(size(pos_mat, 1))
     labels = vcat(labels, zeros(size(neg_mat, 1)))
@@ -30,7 +32,15 @@ function parse_input(pos_seq_fp, total_seq_fp; nr=1000)
 
 end
 
-function create_16b_segments(seq)
+function parse_testing(test_fp)
+
+    test_mat = parse_seq(test_fp)
+
+    test_mat
+
+end
+
+function create_17b_segments(seq)
 
     seqs = []
     for i in 1:17:length(seq)
@@ -46,7 +56,7 @@ end
 # Hash function to compare sequences
 function seq_hash(seq)
 
-    tmp = seq .* 10.^collect(0:(length(seq)-1))
+    tmp = seq .* 2.^collect(0:(length(seq)-1))
     sum(tmp)
 
 end
@@ -81,12 +91,12 @@ function parse_seq(fp)
     f = open(fp, "r");
     l = collect(readlines(f));
 
-    mat = zeros(Int, length(l), length(l[1]))
+    mat = zeros(Int, length(l), length(l[1]) * 4)
 
     for i in 1:length(l)
 
         seq = l[i]
-        mat[i,:] = dna_to_one_hot(seq)
+        mat[i,:] = dna_to_one_hot(seq);
 
     end
 
@@ -99,5 +109,10 @@ end
 convert_dna(x) = DNA_ONE_HOT[x];
 
 function dna_to_one_hot(seq)
-    convert_dna.(split(seq, ""))
+    one_hot = zeros(Int, 4, length(seq))
+    for b in 1:length(seq)
+        one_hot[:,b] = convert_dna(string(seq[b]))
+    end
+
+    collect(Iterators.flatten(one_hot));
 end

@@ -11,11 +11,14 @@ function build_arg_table()
         "simple_encoder"
             action = :command
             help = "run 8x3x8 encododer"
+        "train_model"
+            action = :command
+            help = "train the neural net on sequence data"
     end
 
 
 
-    @add_arg_table settings["predict"] begin
+    @add_arg_table settings["train_model"] begin
         "-N"
             help = "Number of iterations to train neural net"
             default = 1000
@@ -38,7 +41,7 @@ function build_arg_table()
             required = true
     end
 
-    settings["predict"].description = "Predicts on DNA sequences. "
+    settings["train_model"].description = "Trains the neural net for testing purposes."
 
 
     @add_arg_table settings["simple_encoder"] begin
