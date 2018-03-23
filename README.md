@@ -1,7 +1,7 @@
 # NeuralNet
 
 [![Build Status](https://travis-ci.org/mattjones315/NeuralNet.jl.svg?branch=master)](https://travis-ci.org/mattjones315/NeuralNet.jl)
-s
+
 # NeuralNet.jl
 
 Here I've introduced a very basic neural net framework that supports only 3 layer neural nets, with variable sizes of the hidden layer. All output activation functions are sigmoidal.
