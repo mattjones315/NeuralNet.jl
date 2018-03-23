@@ -2,11 +2,11 @@ using FastaIO;
 
 DNA_ONE_HOT = Dict("A" => [1,0,0,0], "C" => [0,1,0,0], "G" => [0,0,1,0], "T" => [0,0,0,1]);
 
-function parse_training(pos_seq_fp, total_seq_fp; nr=100, balance=1)
+function parse_training(pos_seq_fp, total_seq_fp, balance)
 
     pos_mat = parse_seq(pos_seq_fp);
 
-    neg_seqs = readfasta(total_seq_fp)[1:nr];
+    neg_seqs = readfasta(total_seq_fp)[1:100];
     neg_mat = zeros(Int, 1, size(pos_mat, 2));
 
     for seq in neg_seqs

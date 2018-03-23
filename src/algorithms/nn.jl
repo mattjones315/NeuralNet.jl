@@ -84,7 +84,7 @@ function encode_8x3x8(N, alpha, ofile; write_output = false, verbose = true)
 
 end
 
-function nn_predict_on_data(tdata, labels, test_data, hl_size, N, alpha, ofile; write_output=true, verbose=false, C=100)
+function nn_predict_on_data(tdata, labels, test_data, hl_size, N, alpha, ofile, write_output, C)
     # Add bias term to training data
     tdata = hcat(ones(size(tdata, 1), 1), tdata);
 
@@ -187,7 +187,7 @@ function nn_predict_on_data(tdata, labels, test_data, hl_size, N, alpha, ofile; 
 
 end
 
-function train_nn(tdata, labels, hl_size, N, alpha, ofile; write_output = true, verbose = false, C=100)
+function train_nn(tdata, labels, hl_size, N, alpha, ofile, write_output::Bool, C::Int)
 
     # Add bias term to training data
     tdata = hcat(ones(size(tdata, 1), 1), tdata);
